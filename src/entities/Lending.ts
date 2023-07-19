@@ -1,6 +1,7 @@
 import { Student } from './Student';
-import {Column, Entity, PrimaryGeneratedColumn, JoinColumn, ManyToOne} from 'typeorm';
+import {Column, Entity, PrimaryGeneratedColumn, JoinColumn, ManyToOne, ManyToMany} from 'typeorm';
 import { Collaborator } from './Collaborator';
+import { Book } from './Book';
 
 @Entity('lendings')
 export class Lending{
@@ -14,10 +15,13 @@ export class Lending{
   dateReturn: string
 
   @ManyToOne(() => Student, student => student.lendings)
-  @JoinColumn({name: 'student_ra'})
+  @JoinColumn({name: 'student_id'})
   student: Student
 
   @ManyToOne(() => Collaborator, (collaborator) => collaborator.lendings)
-  @JoinColumn({name: 'collaborator_cpf'})
+  @JoinColumn({name: 'collaborator_id'})
   collaborator: Collaborator
+
+  @ManyToMany(() => Book, book => book.lendings)
+  books: Book[] 
 }
