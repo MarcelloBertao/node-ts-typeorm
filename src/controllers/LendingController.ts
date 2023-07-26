@@ -1,19 +1,36 @@
 import { Request, Response } from "express";
 import { lendingRepository } from "../repositories/lendingRepository";
+import { studentRepository } from "../repositories/studentRepository";
+import { collaboratorRepository } from "../repositories/collaboratorRepository";
+import { bookRepository } from "../repositories/bookRepository";
+import { In } from "typeorm";
 
 export class LendingController{
   async create(req: Request, res: Response){
-    const {dateEvent, dateReturn} = req.body
-    const {student_id, collaborator_id} = req.params
+    const {dateEvent, dateReturn, idbook, idstudent, idcollaborator} = req.body
+    console.log(idbook)
 
-    
+    if(!idbook) return res.status(400).json({"message": "Livro necessario!"})
+    if(!idstudent) return res.status(400).json({"message": "Estudante necessario!"})
+    if(!idcollaborator) return res.status(400).json({"message": "Colaborador necessario!"})
     if(!dateEvent) return res.status(400).json({"message": "Data do Empréstimo necessaria!"})
     if(!dateReturn) return res.status(400).json({"message": "Data para Devolução necessaria!"})
 
     try {
+      const books = await bookRepository.find({where: { id: In(idbook)}})
+      const student = await studentRepository.findOneBy({id: idstudent})
+      const collaborator = await collaboratorRepository.findOneBy({id: idcollaborator})
+
+      if(!books || !student || !collaborator){
+        return res.status(404).json({"message": "Não encontrado!"})
+      }
+      
       const newLending = lendingRepository.create({
           dateEvent, 
-          dateReturn
+          dateReturn,
+          books,
+          student,
+          collaborator
         })
         await lendingRepository.save(newLending)
         return res.status(201).json({"message": "Lending created successfully!", newLending})  

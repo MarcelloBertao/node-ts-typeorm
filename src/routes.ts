@@ -2,7 +2,7 @@ import { Router } from "express";
 import { BookController } from "./controllers/BookController";
 import { CollaboratorController } from "./controllers/CollaboratorController";
 import { LendingController } from "./controllers/LendingController";
-import { StudentController } from "./controllers/StundentController";
+import { StudentController } from "./controllers/StudentController";
 
 const routes = Router();
 
