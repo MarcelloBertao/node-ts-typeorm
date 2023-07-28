@@ -23,4 +23,33 @@ export class CollaboratorController{
       return res.status(500).json({ message: "Internal Server Error!"})
     }
   }
+
+  async list(req: Request, res: Response){
+    try{
+      const list = await collaboratorRepository.find()
+        return res.json(list)
+    }catch (error) {
+    console.log(error)
+    return res.status(500).json({"message": "Internal Server Error!"})
+    }
+  }
+
+  async update(req: Request, res: Response){
+    const{cpf, nome, email} = req.body;
+    const {idcollaborator} = req.params
+
+    try{
+      const collaborator = await collaboratorRepository.findOneBy({ id: idcollaborator})
+      if(!collaborator) return res.status(404).json({"message": "Livro não encontrado!"})
+      await collaboratorRepository.update(idcollaborator, {
+        cpf,
+        nome,
+        email
+      })
+      return res.status(202).json({"message": "Colaborador alterado com sucesso!"})
+    }catch (error) {
+      console.log(error)
+      return res.status(500).json({"message": "Internal Server Error!"})
+    }
+  }
 }

@@ -26,4 +26,34 @@ export class StudentController{
       return res.status(500).json({ message: "Internal Server Error!"})
     }
   }
+
+  async list(req: Request, res: Response){
+    try{
+      const list = await studentRepository.find()
+        return res.json(list)
+    }catch (error) {
+    console.log(error)
+    return res.status(500).json({"message": "Internal Server Error!"})
+    }
+  }
+
+  async update(req: Request, res: Response){
+    const { ra, name, email, fone } = req.body
+    const {idstudent} = req.params
+
+    try{
+      const student = await studentRepository.findOneBy({ id: idstudent})
+      if(!student) return res.status(404).json({"message": "Livro não encontrado!"})
+      await studentRepository.update(idstudent, {
+        ra,
+        name,
+        email,
+        fone
+      })
+      return res.status(202).json({"message": "Estudante alterado com sucesso!"})
+    }catch (error) {
+      console.log(error)
+      return res.status(500).json({"message": "Internal Server Error!"})
+    }
+  }
 }

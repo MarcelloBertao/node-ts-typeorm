@@ -26,7 +26,7 @@ export class LendingController{
       }
       
       const newLending = lendingRepository.create({
-          dateEvent, 
+          dateEvent,
           dateReturn,
           books,
           student,
@@ -35,6 +35,50 @@ export class LendingController{
         await lendingRepository.save(newLending)
         return res.status(201).json({"message": "Lending created successfully!", newLending})  
     } catch (error) {
+      console.log(error)
+      return res.status(500).json({"message": "Internal Server Error!"})
+    }
+  }
+
+  async list(req: Request, res: Response){
+    try{
+      const list = await lendingRepository.find({
+        relations: {
+          books: true,
+          collaborator: true,
+          student: true
+        }})
+        return res.json(list)
+    }catch (error) {
+    console.log(error)
+    return res.status(500).json({"message": "Internal Server Error!"})
+    }
+  }
+
+  async update(req: Request, res: Response){
+    const {dateEvent, dateReturn, idbook, idstudent, idcollaborator} = req.body
+    const {idlending} = req.params
+
+    try{
+      const lending = await studentRepository.findOneBy({ id: idlending})
+      const books = await bookRepository.find({where: { id: In(idbook)}})
+      const student = await studentRepository.findOneBy({id: idstudent})
+      const collaborator = await collaboratorRepository.findOneBy({id: idcollaborator})
+
+      if(!lending || !books || !student || !collaborator){
+        return res.status(404).json({"message": "Não encontrado!"})
+      }
+      
+      await lendingRepository.save({
+        id: Number(idlending),
+        dateEvent,
+        dateReturn,
+        books,
+        student,
+        collaborator
+      })
+      return res.status(202).json({"message": "Estudante alterado com sucesso!"})
+    }catch (error) {
       console.log(error)
       return res.status(500).json({"message": "Internal Server Error!"})
     }
