@@ -1,21 +1,21 @@
-import { Column, Entity, JoinColumn, JoinTable, ManyToMany, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
+import { Column, DeleteDateColumn, Entity, JoinColumn, JoinTable, ManyToMany, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
 import { Lending } from "./Lending";
 
 @Entity('books')
-export class Book{
+export class Book {
   @PrimaryGeneratedColumn()
   id: string
 
-  @Column({type: 'text'})
+  @Column({ type: 'text' })
   isbn: string
 
-  @Column({type: 'text'})
+  @Column({ type: 'text' })
   nome: string
 
-  @Column({type: 'text'})
+  @Column({ type: 'text' })
   autor: string
 
-  @Column({type: 'int'})
+  @Column({ type: 'int' })
   paginas: number
 
   @ManyToMany(() => Lending, lending => lending.books)
@@ -23,7 +23,7 @@ export class Book{
     name: 'book_lending',
     joinColumn: {
       name: 'book_id',
-      referencedColumnName: 'id'  
+      referencedColumnName: 'id'
     },
     inverseJoinColumn: {
       name: 'lending_id',
@@ -31,4 +31,7 @@ export class Book{
     }
   })
   lendings: Lending[]
+
+  @DeleteDateColumn()
+  deletedAt: Date
 }
